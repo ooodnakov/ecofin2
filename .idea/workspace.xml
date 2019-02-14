@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d51304c2-b19d-4e40-a7d9-70e95393a797" name="Default Changelist" comment="" />
+    <list default="true" id="d51304c2-b19d-4e40-a7d9-70e95393a797" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/code.py" beforeDir="false" afterPath="$PROJECT_DIR$/code.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecofin2" beforeDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -10,25 +13,16 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/code.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="425">
-              <caret line="402" column="46" selection-start-line="402" selection-start-column="46" selection-end-line="402" selection-end-column="46" />
+            <state relative-caret-position="185">
+              <caret line="602" column="3" selection-start-line="602" selection-start-column="3" selection-end-line="602" selection-end-column="3" />
               <folding>
                 <element signature="e#6935#8573#0" />
                 <element signature="e#11862#12658#0" />
                 <element signature="e#11808#12468#0" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/wr.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="31" column="23" selection-start-line="31" selection-start-column="23" selection-end-line="31" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -51,12 +45,15 @@
       <find>pidr_cd</find>
     </findStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/results.json" />
-        <option value="$PROJECT_DIR$/code.py" />
         <option value="$PROJECT_DIR$/wr.py" />
+        <option value="$PROJECT_DIR$/code.py" />
       </list>
     </option>
   </component>
@@ -66,6 +63,7 @@
     <option name="width" value="1400" />
     <option name="height" value="1000" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -149,7 +147,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1080" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Favorites" side_tool="true" />
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18133895" />
@@ -160,7 +157,7 @@
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32876712" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32876712" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39936775" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -190,18 +187,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/code.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="402" column="46" selection-start-line="402" selection-start-column="46" selection-end-line="402" selection-end-column="46" />
-          <folding>
-            <element signature="e#6935#8573#0" />
-            <element signature="e#11862#12658#0" />
-            <element signature="e#11808#12468#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/problems2.json">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -209,6 +194,18 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
           <caret line="31" column="23" selection-start-line="31" selection-start-column="23" selection-end-line="31" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/code.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="185">
+          <caret line="602" column="3" selection-start-line="602" selection-start-column="3" selection-end-line="602" selection-end-column="3" />
+          <folding>
+            <element signature="e#6935#8573#0" />
+            <element signature="e#11862#12658#0" />
+            <element signature="e#11808#12468#0" />
+          </folding>
         </state>
       </provider>
     </entry>

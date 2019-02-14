@@ -600,6 +600,7 @@ def cheats(bot, updater):
 /pidr_sall
 /pidr_repost
 /pidr_congrats
+sss
     ''')
 
 

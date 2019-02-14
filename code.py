@@ -18,7 +18,7 @@ import totable
 import random
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-TOKEN = '707090914:AAFOupGmBjkNIkaZp81IEflkHuDiZgbqOWk'
+TOKEN = '754744500:AAHMdrn9dFwzMkddLOcDTk-3Ertqf7qAZeY'
 updater = Updater(token=TOKEN)
 dispatcher = updater.dispatcher
 job_queue = updater.job_queue
@@ -48,7 +48,7 @@ def confirmation(bot, updater):
     if str(updater.message.chat.id) in players:
         bot.send_message(chat_id=updater.message.chat.id,
                          text='Йо, ты уже в системе. Просто используй команды.')
-        #show_menu(bot, updater)
+        show_menu(bot, updater)
     else:
         btnlist = [
             telegram.InlineKeyboardButton('Согласен.', callback_data='agree'),
@@ -72,12 +72,12 @@ def query_h(bot, updater, job_queue):
             id = call.from_user.id
             try:
                 if not pidr_cd(bot, updater)[0]:
-                    bot.send_message(chat_id=call.message.chat.id, text='Контест не сегодня!')
-                elif players[str(id)][2][len(players[str(id)][2]) - 1][3] != 'not contest':
-                    bot.send_message(chat_id=call.message.chat.id, text='Ты уже писал контест!')
+                    bot.send_message(chat_id=id, text='Контест не сегодня!')
+                elif players[str(id)][2][len(players[str(id)][2]) - 1][3] == 'not contestFalse' and pidr_cd(bot, updater)[0]:
+                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=call.message.text)
+                    start_carousel(bot, updater, 1, job_queue)
                 else:
-                        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                                              text=call.message.text)
+                    bot.send_message(chat_id=id, text='Ты уже писал контест!')
             except KeyError:
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
                                       text=call.message.text)
@@ -114,6 +114,27 @@ def query_h(bot, updater, job_queue):
         result(bot, updater)
     if call.data == 'allresults':
         allresults(bot, updater)
+
+    if call.data == 'others':
+        btnlist = [
+        telegram.InlineKeyboardButton('Поддержать проект!', callback_data='donate'),
+        telegram.InlineKeyboardButton('Отправить отзыв.', callback_data='feedback'),
+            telegram.InlineKeyboardButton('Последний результат.', callback_data='result'),
+            telegram.InlineKeyboardButton('Все результаты.', callback_data='allresults'),
+            telegram.InlineKeyboardButton('Основное меню.', callback_data='menu')
+        ]
+        markup = telegram.InlineKeyboardMarkup(wr.build_menu(btnlist, n_cols=2))
+        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=call.message.text, reply_markup=markup)
+
+    if call.data == 'menu':
+        btnlist = [
+            telegram.InlineKeyboardButton('Показать задачки.', callback_data='problems'),
+            telegram.InlineKeyboardButton('Правила.', callback_data='rules'),
+            telegram.InlineKeyboardButton('Другое.', callback_data='others')
+        ]
+        btn = telegram.InlineKeyboardButton('Начать Контест!', callback_data='contest')
+        markup = telegram.InlineKeyboardMarkup(wr.build_menu(btnlist, n_cols=2, footer_buttons=[btn]))
+        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=call.message.text, reply_markup=markup)
 
 
     if call.data == 'donate':
@@ -175,9 +196,9 @@ def print_rules(bot, updater):
 
 Ход тура и подведение его итогов:
 
-Время, которое даётся на решение задач, ограничено пятью часами. 
+Время, которое даётся на решение задач, ограничено временем проведения тура.
 
-Вы можете выбрать любой промежуток времени в который вам будет удобно решить задачи, начиная с 8:00am 9ого февраля, заканчивая 1:00am 11ого февраля. (время указано по Мск)
+Вы можете выбрать любой промежуток времени в который вам будет удобно решить задачи, начиная с 8:00am 4ого марта, заканчивая 1:00am 6ого марта. (время указано по Мск)
 
 Вопросы по условию можно задавать авторам задач на протяжении всего тура в вк:
 Александр - vk.com/sashashivarov
@@ -254,6 +275,28 @@ def start_carousel(bot, updater, compete, job_queue):
         text='Тур стартует! Решайте внимательно и осторожно...')
     time.sleep(random.uniform(0, 0.7))
     print_problem(bot, updater, 1)
+    if pidr_cd(bot, updater):
+        end = dt.datetime(2019, 3, 6, 1, tzinfo=pytz.timezone('Europe/Moscow'))
+        job_queue.run_once(timer, (end-today).total_seconds(), context=updater.callback_query.message.chat.id)
+
+
+def timer(bot, job):
+    players = wr.read_results()
+    if players[str(job.context)][2][len(
+        players[str(job.context)][2]) - 1][3] == 'started':
+        bot.send_message(chat_id=job.context, text='ВРЕМЯ ИСТЕКЛО!')
+        players[str(job.context)][2][len(
+            players[str(job.context)][2]) - 1][3] = 'ended'
+        wr.write_results(players)
+        bot.send_message(
+            chat_id=job.context,
+            text='Ура! Тур завершён!\nРезультаты будут опубликованы в боте и на странице: vk.com/sashashivarov')
+        result(bot, job.context)
+        bot.send_message(
+            chat_id=job.context,
+            text='А сейчас вы сможете оставить свой комментарий/пожелания, например, какая задача вам понравилась больше всего, какая меньше.\nСпасибо большое, за то что приняли участие в проекты, если вы хотите поддержать нас, то ')
+        donate(bot, job.context)
+
 
 
 @run_async
@@ -265,7 +308,9 @@ def select_problems(bot, updater):
         message = updater.message
     players = wr.read_results()
     today = pidr_cd(bot, updater)[1]
+    state = pidr_cd(bot, updater)[0]
     name = str(message.chat.username) + '  ' + str(message.chat.first_name) + '  ' + str(message.chat.last_name)
+    contest = players[str(message.chat.id)][2][len(players[str(message.chat.id)][2])-1][3]
     if str(message.chat.id) not in players:
         players[str(message.chat.id)] = [message.chat.id,
                                          '@' + name,
@@ -283,10 +328,26 @@ def select_problems(bot, updater):
                                             '11': [0],
                                             '12': [0]},
                                            2,
-                                           'not contest']]]
+                                           'not contest{}'.format(state)]]]
         wr.write_results(players)
-    contest = players[str(message.chat.id)][2][len(players[str(message.chat.id)][2])-1][3]
-    if contest == 'not contest':
+    elif contest[:11] != 'not contest':
+        players[str(message.chat.id)][2].append([today.strftime("%Y-%m-%d %H:%M:%S.%f"),
+                                           {'1': [0],
+                                            '2': [0],
+                                            '3': [0],
+                                            '4': [0],
+                                            '5': [0],
+                                            '6': [0],
+                                            '7': [0],
+                                            '8': [0],
+                                            '9': [0],
+                                            '10': [0],
+                                            '11': [0],
+                                            '12': [0]},
+                                           2,
+                                           'not contest{}'.format(state)])
+        wr.write_results(players)
+    if contest[:11] == 'not contest':
         btnlist = []
         for i in range(1, 8, 6):
             btnlist.append(telegram.InlineKeyboardButton(
@@ -348,7 +409,7 @@ def print_problem(bot, updater, *args):
 def calc(id, players):
     for k in range(0, len(players[str(id)][2])):
         res = players[str(id)][2][k][1]
-        if players[str(id)][2][k][3] != 'not contest':
+        if players[str(id)][2][k][3][:11] != 'not contest':
             for num in list(i for i in range(1, 13) if len(res[str(i)]) != 1):
                 if problems[num - 1][1] == res[str(num)][1]:
                     if num == 1:
@@ -390,7 +451,7 @@ def answer_problem(bot, updater):
             markup = telegram.ReplyKeyboardRemove(selective=False)
             ans = message.text
             rep = message.reply_to_message.text
-            num = [int(s) for s in rep.split() if s.isdigit()][0]
+            num = int(rep[19:-2])
             try:
                 a = float(ans)
                 if len(res[str(num)]) == 2:
@@ -410,11 +471,11 @@ def answer_problem(bot, updater):
                             wr.write_results(players)
                             bot.send_message(
                                 chat_id=message.chat.id,
-                                text='Ура! Тур завершён!\nРезультаты будут опубликованы в боте и на странице: vk.com/sashashivarov')
+                                text='Ура! Тур завершён!\nРезультаты будут опубликованы в группе:\nvk.com/economic_carousel')
                             result(bot, updater)
                             bot.send_message(
                                 chat_id=message.chat.id,
-                                text='А сейчас вы сможете оставить свой комментарий/пожелания, например, какая задача вам понравилась больше всего, какая меньше.\nСпасибо большое, за то что приняли участие в проекты, если вы хотите поддержать нас, то ')
+                                text='А сейчас вы сможете оставить свой комментарий/пожелания, например, какая задача вам понравилась больше всего, какая меньше.\nhttps://goo.gl/forms/XBIyXoYEEQUrB9IB2\nСпасибо большое, за то что приняли участие в проекты, если вы хотите поддержать нас, то ')
                             donate(bot, updater)
                         else:
                             wr.write_results(players)
@@ -480,8 +541,8 @@ def result(bot, updater):
         players = calc(id, players)
         wr.write_results(players)
         resu = players[str(id)][2][len(players[str(id)][2]) - 1]
-        text = 'Ваше финальный результат '
-        if resu[3] != 'not contest':
+        text = 'Ваш финальный результат '
+        if resu[3][:11] != 'not contest':
             text += 'на Карусели :\n'
         else:
             text += 'на Дорешке :\n'
@@ -491,7 +552,7 @@ def result(bot, updater):
         for res in list(str(i) for i in range(7, 13)):
             text += '№{} - {} |'.format(res, resu[1][res][0]) + ' '
         text = text[:-2] + '\n'
-        if resu[3] != 'not contest':
+        if resu[3][:11] != 'not contest':
             text += 'И сумма ваших очков: ' + \
                 str(sum(resu[1][i][0] for i in resu[1].keys())) + '.'
         else:
@@ -516,9 +577,9 @@ def allresults(bot, updater):
         resus = players[str(id)][2]
         for resu in resus:
             if resu[1]:
-                text = 'Ваше финальный результат на {} '.format(
+                text = 'Ваш финальный результат на {} '.format(
                     str(resu[0])[:-7])
-                if resu[3] != 'not contest':
+                if resu[3][:11] != 'not contest':
                     text += 'на Карусели :\n'
                 else:
                     text += 'на Дорешке :\n'
@@ -528,7 +589,7 @@ def allresults(bot, updater):
                 for res in list(str(i) for i in range(7, 13)):
                     text += '№{} - {} |'.format(res, resu[1][res][0]) + ' '
                 text = text[:-2] + '\n'
-                if resu[3] != 'not contest':
+                if resu[3][:11] != 'not contest':
                     text += 'И сумма ваших очков: ' + \
                         str(sum(resu[1][i][0] for i in resu[1].keys())) + '.'
                 else:
@@ -578,13 +639,10 @@ def show_menu(bot, updater):
     else:
         id = updater.message.chat.id
     btnlist = [
-        telegram.InlineKeyboardButton('Последний результат.', callback_data='result'),
-        telegram.InlineKeyboardButton('Все результаты.', callback_data='allresults'),
-        telegram.InlineKeyboardButton('Время.', callback_data='time'),
         telegram.InlineKeyboardButton('Показать задачки.', callback_data='problems'),
-        telegram.InlineKeyboardButton('Поддержать проект!', callback_data='donate'),
-        telegram.InlineKeyboardButton('Отправить отзыв.', callback_data='feedback'),
-        telegram.InlineKeyboardButton('Правила.', callback_data='rules')
+        telegram.InlineKeyboardButton('Правила.', callback_data='rules'),
+        telegram.InlineKeyboardButton('Другое.', callback_data='others')
+
     ]
     btn = telegram.InlineKeyboardButton('Начать Контест!', callback_data='contest')
     markup = telegram.InlineKeyboardMarkup(wr.build_menu(btnlist, n_cols=2, footer_buttons=[btn]))
@@ -600,7 +658,6 @@ def cheats(bot, updater):
 /pidr_sall
 /pidr_repost
 /pidr_congrats
-sss
     ''')
 
 
@@ -641,7 +698,9 @@ def thx_fb(bot, updater):
 @run_async
 def donate(bot, updater):
     time.sleep(random.uniform(0, 0.7))
-    if 'callback_query' in str(updater):
+    if type(updater) is int:
+        id = updater
+    elif 'callback_query' in str(updater):
         id = updater.callback_query.message.chat.id
     else:
         id = updater.message.chat.id
@@ -654,23 +713,16 @@ def donate(bot, updater):
         text='Спасибо большое за желание поддержать наш проект, участвая в нём!')
 
 
-def sr(bot, updater):
-    while True:
-        send_res(bot, updater)
-        send_fb(bot, updater)
-        time.sleep(60*5)
-
-
 def repost(bot, updater):
     for id in wr.read_results():
         try:
-            bot.send_message(chat_id=id, text='''Добрый вечер!\nРезульты доступные в нашей группе https://vk.com/economic_carousel !''')
+            bot.send_message(chat_id=id, text='''''')
         except telegram.error.Unauthorized:
             pass
 
 
 def congrats(bot, updater):
-    ids = [698067784, 364811146, 143103809, 553434494, 196182600, 451593371, 135674428, 298465764]
+    ids = []
     for id in ids:
         bot.send_message(chat_id=id, text='Напишите пожалуйста своё ФИО сюда)\n@sasha_shivarov или\nhttps://vk.com/sashashivarov\nНо только в одно место!')
 
@@ -688,7 +740,6 @@ dispatcher.add_handler(CommandHandler('pidr_cheats', cheats))
 dispatcher.add_handler(CommandHandler('feedback', feedback))
 dispatcher.add_handler(CommandHandler('donate', donate))
 dispatcher.add_handler(CommandHandler('pidr_sf', send_fb))
-dispatcher.add_handler(CommandHandler('pidr_sall', sr))
 dispatcher.add_handler(CommandHandler('pidr_repost', repost))
 dispatcher.add_handler(CommandHandler('rules', print_rules))
 dispatcher.add_handler(CommandHandler('pidr_congrats', congrats))

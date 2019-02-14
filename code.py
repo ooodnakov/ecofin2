@@ -296,7 +296,7 @@ def timer(bot, job):
             chat_id=job.context,
             text='А сейчас вы сможете оставить свой комментарий/пожелания, например, какая задача вам понравилась больше всего, какая меньше.\nСпасибо большое, за то что приняли участие в проекты, если вы хотите поддержать нас, то ')
         donate(bot, job.context)
-
+        select_problems(bot, updater)
 
 
 @run_async
@@ -477,6 +477,7 @@ def answer_problem(bot, updater):
                                 chat_id=message.chat.id,
                                 text='А сейчас вы сможете оставить свой комментарий/пожелания, например, какая задача вам понравилась больше всего, какая меньше.\nhttps://goo.gl/forms/XBIyXoYEEQUrB9IB2\nСпасибо большое, за то что приняли участие в проекты, если вы хотите поддержать нас, то ')
                             donate(bot, updater)
+                            select_problems(bot, updater)
                         else:
                             wr.write_results(players)
                             print_problem(bot, updater, num + 1)
